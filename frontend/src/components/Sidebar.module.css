@@ -19,6 +19,11 @@
   overflow-y: auto;
 }
 
+.mobileToggle,
+.overlay {
+  display: none;
+}
+
 .logo {
   display: flex;
   align-items: center;
@@ -29,6 +34,11 @@
   font-weight: 800;
   font-size: 17px;
   letter-spacing: -0.3px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
 }
 
 .spiderIcon {
@@ -146,4 +156,70 @@
   font-size: 10px;
   color: var(--muted);
   line-height: 1.7;
+}
+
+.metaGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.metaCard {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+}
+
+.metaCard strong {
+  display: block;
+  margin-top: 4px;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.metaLabel {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+@media (max-width: 768px) {
+  .mobileToggle {
+    display: flex;
+    position: fixed;
+    top: 14px;
+    left: 16px;
+    z-index: 35;
+    width: 40px;
+    height: 40px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background: rgba(17, 17, 24, 0.92);
+    color: var(--text);
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    border: none;
+    z-index: 24;
+  }
+
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.2s ease;
+    z-index: 30;
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
 }

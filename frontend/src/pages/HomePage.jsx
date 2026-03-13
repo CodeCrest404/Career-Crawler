@@ -1,7 +1,10 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Navbar from '../components/Navbar';
 import JobCard from '../components/JobCard';
-import { JOBS, COMPANIES, QUICK_TAGS } from '../data/mockData';
+import ComboBox from '../components/ComboBox';
+import { COMPANIES, EXPERIENCE, LOCATIONS, QUICK_TAGS, ROLE_SUGGESTIONS } from '../data/mockData';
+import { appConfig } from '../config/appConfig';
+import { loadFeaturedJobs } from '../services/jobData';
 import styles from './HomePage.module.css';
 
 /* ─── Static data for the features grid ─── */
@@ -59,15 +62,24 @@ const STATS = [
 ];
 
 export default function HomePage({ onNavigateDashboard }) {
-  const roleRef     = useRef(null);
-  const locationRef = useRef(null);
-  const expRef      = useRef(null);
+  const roleRef = useRef(null);
+  const [previewJobs, setPreviewJobs] = useState([]);
+  const [role, setRole] = useState('');
+  const [location, setLocation] = useState('');
+  const [experience, setExperience] = useState('');
+
+  const scrollToSection = (sectionId) => {
+    const element = document.getElementById(sectionId);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  };
 
   const handleSearch = () => {
     onNavigateDashboard({
-      role:     roleRef.current?.value     || '',
-      location: locationRef.current?.value || '',
-      exp:      expRef.current?.value      || '',
+      role: roleRef.current?.value || role || '',
+      location,
+      exp: experience,
     });
   };
 
@@ -80,6 +92,29 @@ export default function HomePage({ onNavigateDashboard }) {
     '#F59E0B','#34D399',
   ];
 
+  useEffect(() => {
+    let cancelled = false;
+
+    async function syncPreviewJobs() {
+      try {
+        const jobs = await loadFeaturedJobs(4);
+        if (!cancelled) {
+          setPreviewJobs(jobs);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setPreviewJobs([]);
+        }
+      }
+    }
+
+    syncPreviewJobs();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className={styles.page}>
       {/* Background grid texture */}
@@ -90,7 +125,11 @@ export default function HomePage({ onNavigateDashboard }) {
       <div className={styles.orb2} aria-hidden />
 
       {/* ── NAV ── */}
-      <Navbar onGetStarted={onNavigateDashboard} />
+      <Navbar
+        onGetStarted={onNavigateDashboard}
+        onLogoClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+        onNavigateSection={scrollToSection}
+      />
 
       {/* ── HERO ── */}
       <section className={styles.hero}>
@@ -111,20 +150,33 @@ export default function HomePage({ onNavigateDashboard }) {
 
         {/* Search bar */}
         <div className={styles.searchBox}>
-          <div className={styles.field}>
-            <SearchIcon />
-            <input ref={roleRef} type="text" placeholder="Role, skill, or keyword..." />
-          </div>
+          <ComboBox
+            className={styles.searchCombo}
+            value={role}
+            onChange={setRole}
+            options={ROLE_SUGGESTIONS}
+            placeholder="Role, skill, or keyword..."
+            icon={<SearchIcon />}
+            inputRef={roleRef}
+          />
           <div className={styles.divider} />
-          <div className={styles.field}>
-            <PinIcon />
-            <input ref={locationRef} type="text" placeholder="Location" />
-          </div>
+          <ComboBox
+            className={styles.searchCombo}
+            value={location}
+            onChange={setLocation}
+            options={LOCATIONS.filter((option) => option !== 'All Locations')}
+            placeholder="Location"
+            icon={<PinIcon />}
+          />
           <div className={styles.divider} />
-          <div className={styles.field}>
-            <BriefcaseIcon />
-            <input ref={expRef} type="text" placeholder="Experience" />
-          </div>
+          <ComboBox
+            className={styles.searchCombo}
+            value={experience}
+            onChange={setExperience}
+            options={EXPERIENCE.filter((option) => option !== 'Experience: All')}
+            placeholder="Experience"
+            icon={<BriefcaseIcon />}
+          />
           <button className={styles.searchBtn} onClick={handleSearch}>
             <SearchIcon stroke="white" />
             Search
@@ -139,6 +191,7 @@ export default function HomePage({ onNavigateDashboard }) {
               className={styles.qTag}
               onClick={() => {
                 if (roleRef.current) roleRef.current.value = tag;
+                setRole(tag);
               }}
             >
               {tag}
@@ -158,7 +211,7 @@ export default function HomePage({ onNavigateDashboard }) {
       </div>
 
       {/* ── MARQUEE ── */}
-      <div className={styles.marqueeWrap}>
+      <div className={styles.marqueeWrap} id="companies">
         <p className={styles.marqueeLabel}>Companies we crawl</p>
         <div className={styles.marqueeTrack}>
           {marqueeItems.map((name, i) => (
@@ -174,7 +227,7 @@ export default function HomePage({ onNavigateDashboard }) {
       </div>
 
       {/* ── FEATURES ── */}
-      <section className={styles.section}>
+      <section className={styles.section} id="docs">
         <div className={styles.sectionLabel}>// WHAT IT DOES</div>
         <h2 className={styles.sectionTitle}>Built different.</h2>
 
@@ -197,14 +250,14 @@ export default function HomePage({ onNavigateDashboard }) {
         <h2 className={styles.sectionTitle}>Fresh off the crawler.</h2>
 
         <div className={styles.jobList}>
-          {JOBS.slice(0, 4).map((job) => (
+          {previewJobs.map((job) => (
             <JobCard key={job.id} job={job} />
           ))}
         </div>
 
         <div className={styles.viewAllWrap}>
-          <button className={styles.viewAllBtn} onClick={onNavigateDashboard}>
-            View All 1,247 Jobs →
+          <button className={styles.viewAllBtn} type="button" onClick={() => onNavigateDashboard({}, 'jobs')}>
+            View All {appConfig.useMockData ? 'Mock' : 'Live'} Jobs →
           </button>
         </div>
       </section>
@@ -220,21 +273,39 @@ export default function HomePage({ onNavigateDashboard }) {
             Everything you need. One place. Updated every 6 hours.
           </p>
           <div className={styles.ctaActions}>
-            <button className={styles.btnPrimary} onClick={onNavigateDashboard}>
+            <button className={styles.btnPrimary} type="button" onClick={() => onNavigateDashboard({}, 'jobs')}>
               Browse All Jobs →
             </button>
-            <button className={styles.btnSecondary}>View API Docs</button>
+            <a className={styles.btnSecondary} href={`${appConfig.apiBaseUrl}/api/health`} target="_blank" rel="noreferrer">
+              View API Health
+            </a>
           </div>
         </div>
       </section>
 
+      <section className={styles.section} id="api">
+        <div className={styles.sectionLabel}>// API</div>
+        <h2 className={styles.sectionTitle}>Live endpoints.</h2>
+        <div className={styles.jobList}>
+          {[
+            `${appConfig.apiBaseUrl}/api/health`,
+            `${appConfig.apiBaseUrl}/api/jobs?page=1&limit=20`,
+            `${appConfig.apiBaseUrl}/api/stats`,
+          ].map((endpoint) => (
+            <a key={endpoint} className={styles.viewAllBtn} href={endpoint} target="_blank" rel="noreferrer">
+              {endpoint}
+            </a>
+          ))}
+        </div>
+      </section>
+
       {/* ── FOOTER ── */}
-      <footer className={styles.footer}>
+      <footer className={styles.footer} id="privacy">
         <p>© 2026 CareerCrawler 🕷️ — Built with Puppeteer, Cheerio &amp; MongoDB</p>
         <div className={styles.footerLinks}>
-          <a href="https://github.com" target="_blank" rel="noreferrer">GitHub</a>
-          <a href="#">API</a>
-          <a href="#">Privacy</a>
+          <a href="https://github.com/CodeCrest404/Career-Crawler" target="_blank" rel="noreferrer">GitHub</a>
+          <a href={`${appConfig.apiBaseUrl}/api/stats`} target="_blank" rel="noreferrer">API</a>
+          <a href="#privacy">Privacy</a>
         </div>
       </footer>
     </div>

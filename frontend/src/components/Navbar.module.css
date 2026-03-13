@@ -19,6 +19,11 @@
   font-size: 20px;
   font-weight: 800;
   letter-spacing: -0.5px;
+  background: transparent;
+  border: none;
+  color: var(--text);
+  padding: 0;
+  cursor: pointer;
 }
 
 .spiderIcon {
@@ -43,14 +48,18 @@
   list-style: none;
 }
 
-.links li a {
+.links li button {
   color: var(--muted);
   font-size: 14px;
   font-family: var(--font-mono);
   transition: color 0.2s;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
 }
 
-.links li a:hover {
+.links li button:hover {
   color: var(--text);
 }
 
@@ -68,4 +77,33 @@
 .btn:hover {
   transform: translateY(-1px);
   box-shadow: 0 8px 24px rgba(124, 58, 237, 0.4);
+}
+
+@media (max-width: 900px) {
+  .nav {
+    padding: 16px 24px;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+
+  .links {
+    order: 3;
+    width: 100%;
+    justify-content: space-between;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 600px) {
+  .links {
+    display: none;
+  }
+
+  .nav {
+    padding: 16px;
+  }
+
+  .logo {
+    font-size: 18px;
+  }
 }

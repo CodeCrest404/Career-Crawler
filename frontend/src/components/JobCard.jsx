@@ -19,7 +19,9 @@ export default function JobCard({ job }) {
           <span>{job.company}</span>
           <span>📍 {job.location}</span>
           <span>🎯 {job.experience}</span>
-          <span>🕐 Scraped {job.scrapedAt}</span>
+          <span>🆔 {job.sourceJobId}</span>
+          <span>🕐 Scraped {job.scrapedAtLabel}</span>
+          <span>📅 {job.scrapedAtFull}</span>
         </div>
       </div>
 

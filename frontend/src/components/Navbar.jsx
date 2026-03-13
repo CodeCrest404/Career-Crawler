@@ -1,22 +1,26 @@
 import React from 'react';
 import styles from './Navbar.module.css';
 
-export default function Navbar({ onGetStarted }) {
+export default function Navbar({ onGetStarted, onLogoClick, onNavigateSection }) {
+  const handleNavigate = (sectionId) => {
+    onNavigateSection?.(sectionId);
+  };
+
   return (
     <nav className={styles.nav}>
-      <div className={styles.logo}>
+      <button className={styles.logo} onClick={onLogoClick} type="button">
         <div className={styles.spiderIcon}>🕷️</div>
         CareerCrawler <span className={styles.version}>/ v1.0</span>
-      </div>
+      </button>
 
       <ul className={styles.links}>
-        <li><a href="#jobs">Jobs</a></li>
-        <li><a href="#companies">Companies</a></li>
-        <li><a href="#api">API</a></li>
-        <li><a href="#docs">Docs</a></li>
+        <li><button type="button" onClick={() => handleNavigate('jobs')}>Jobs</button></li>
+        <li><button type="button" onClick={() => handleNavigate('companies')}>Companies</button></li>
+        <li><button type="button" onClick={() => handleNavigate('api')}>API</button></li>
+        <li><button type="button" onClick={() => handleNavigate('docs')}>Docs</button></li>
       </ul>
 
-      <button className={styles.btn} onClick={onGetStarted}>
+      <button className={styles.btn} type="button" onClick={() => onGetStarted?.({}, 'jobs')}>
         Get Started →
       </button>
     </nav>

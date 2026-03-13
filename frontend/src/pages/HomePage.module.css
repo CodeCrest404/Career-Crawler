@@ -127,11 +127,11 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
-  color: var(--muted);
+  min-width: 0;
+}
+
+.searchCombo {
+  flex: 1;
 }
 
 .field input {

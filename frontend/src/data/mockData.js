@@ -139,3 +139,19 @@ export const CATEGORIES = ['All', 'Backend', 'Frontend', 'Data', 'DevOps', 'ML /
 export const LOCATIONS  = ['All Locations', 'Bangalore', 'Hyderabad', 'Remote', 'Mumbai'];
 export const EXPERIENCE = ['Experience: All', '0-1 years', '1-3 years', '3-5 years', '5+ years'];
 export const QUICK_TAGS = ['Backend Engineer', 'Frontend', 'Product Manager', 'Data Science', 'DevOps', 'Bangalore', 'Remote'];
+
+export const ROLE_SUGGESTIONS = [
+  ...new Set([
+    ...QUICK_TAGS.filter((tag) => !LOCATIONS.includes(tag)),
+    ...JOBS.map((job) => job.title),
+    ...JOBS.flatMap((job) => job.skills),
+    'Software Engineer',
+    'Backend Engineer',
+    'Frontend Engineer',
+    'Full Stack Engineer',
+    'Data Engineer',
+    'Machine Learning Engineer',
+    'DevOps Engineer',
+    'Product Manager',
+  ]),
+];

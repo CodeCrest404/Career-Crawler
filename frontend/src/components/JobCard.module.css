@@ -56,9 +56,7 @@
   font-weight: 700;
   margin-bottom: 5px;
   letter-spacing: -0.2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.4;
 }
 
 .meta {
@@ -74,6 +72,7 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  word-break: break-word;
 }
 
 .tags {
@@ -139,4 +138,49 @@
 
 .applyBtn:hover {
   background: #6D28D9;
+}
+
+@media (max-width: 960px) {
+  .row {
+    grid-template-columns: 44px 1fr;
+  }
+
+  .tags {
+    grid-column: 1 / -1;
+    padding-left: 60px;
+  }
+
+  .actions {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}
+
+@media (max-width: 640px) {
+  .row {
+    padding: 14px 14px 16px;
+    gap: 12px;
+  }
+
+  .meta {
+    gap: 8px;
+  }
+
+  .tags {
+    padding-left: 0;
+  }
+
+  .actions {
+    justify-content: stretch;
+    width: 100%;
+  }
+
+  .saveBtn {
+    flex-shrink: 0;
+  }
+
+  .applyBtn {
+    flex: 1;
+    text-align: center;
+  }
 }

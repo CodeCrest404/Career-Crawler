@@ -6,9 +6,11 @@ import DashboardPage from './pages/DashboardPage';
 export default function App() {
   const [page,    setPage]    = useState('home');   // 'home' | 'dashboard'
   const [filters, setFilters] = useState({});
+  const [dashboardSection, setDashboardSection] = useState('jobs');
 
-  const goToDashboard = (f = {}) => {
+  const goToDashboard = (f = {}, section = 'jobs') => {
     setFilters(f);
+    setDashboardSection(section);
     setPage('dashboard');
   };
 
@@ -18,7 +20,9 @@ export default function App() {
     return (
       <DashboardPage
         initialFilters={filters}
+        initialSection={dashboardSection}
         onNavigateHome={goToHome}
+        onNavigateDashboardSection={setDashboardSection}
       />
     );
   }

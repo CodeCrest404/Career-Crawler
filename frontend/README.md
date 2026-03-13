@@ -45,6 +45,17 @@ http://localhost:5173
 
 ## Connecting to your backend
 
+Create a `.env` file in `frontend/` and switch the app mode there:
+
+```bash
+VITE_USE_MOCK_DATA=true
+VITE_API_BASE_URL=http://localhost:5000
+```
+
+- Set `VITE_USE_MOCK_DATA=true` to use local mock jobs
+- Set `VITE_USE_MOCK_DATA=false` to call the backend API
+- `VITE_API_BASE_URL` controls which backend base URL is used
+
 Replace the mock data in `src/data/mockData.js` with real API calls.
 
 Example — fetching jobs from your Express backend:
